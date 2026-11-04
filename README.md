@@ -17,7 +17,7 @@
   <a href="README.zh-TW.md"><img src="https://img.shields.io/badge/lang-繁體中文-green" alt="繁體中文"></a>
 </p>
 
-<p align="center"><img src="docs/hero-en.png" alt="Before: Claude stuck at a text-only terminal unable to generate images or videos while isolated from other agents. With agent-bridge: A glowing local mesh bridge (:8765) connects Claude, Codex, and Antigravity — beaming AI images and MP4 videos straight into your project folder." width="900"></p>
+<p align="center"><img src="docs/hero-en.png" alt="Before: Left robot (Gemini) in an isolated silo unable to collaborate with Claude, and right robot (Claude) stuck at a text-only terminal unable to generate images or videos. With agent-bridge: A glowing local mesh bridge (:8765) connects Gemini, Claude, and Antigravity — beaming AI images and MP4 videos straight into your project folder." width="900"></p>
 
 ## Use cases
 
