@@ -17,7 +17,7 @@
   <a href="README.md"><img src="https://img.shields.io/badge/lang-English-green" alt="English"></a>
 </p>
 
-<p align="center"><img src="docs/hero-en.png" alt="左：以前 Claude 與 Codex 只能輸出純文字，遇到生圖生影片就卡住。右：裝上 agent-bridge 後，透過 :8765 本地匯流排連接 Antigravity，直接把高畫質圖片與 MP4 影片送進專案資料夾。" width="900"></p>
+<p align="center"><img src="docs/hero-zh.png" alt="左：安裝前，Claude 與 Codex 只能輸出純文字，螢幕顯示「純文字模式 — 無法產生圖片與影片」。右：裝上 agent-bridge 後，透過 :8765 本地匯流排連接 Antigravity，直接把高畫質圖片與 MP4 影片送進專案資料夾，雙雙顯示「任務完成」。" width="900"></p>
 
 ## 使用情境
 
@@ -107,7 +107,7 @@ agent-bridge-daemon --host 127.0.0.1 --port 8765
 
 ### Agent Mesh 協同中控室
 
-<p align="center"><img src="docs/mesh-workflow.png" alt="Agent Mesh 協同中控室：Claude（架構師）、Codex（極速工程師）與 Antigravity（多媒體創意總監）圍繞著 Local Agent Mesh Daemon (:8765) 協同工作，並由 Hop Firewall <= 3 保護。" width="900"></p>
+<p align="center"><img src="docs/mesh-workflow-zh.png" alt="Agent 協同中控室：Claude（架構審查）、Codex（極速實作）與 Antigravity（生圖/生影片）圍繞著本地常駐中心 (:8765) 協同工作，並由「防死循環 <= 3」護盾保護。" width="900"></p>
 
 每一筆透過 `http://127.0.0.1:8765/tasks` 派發的任務，都會回傳標準化的 **A2A 任務結果封包**：
 
