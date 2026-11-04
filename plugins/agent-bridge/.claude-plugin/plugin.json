@@ -1,0 +1,14 @@
+{
+  "name": "agent-bridge",
+  "version": "0.1.0",
+  "description": "Local Agent Mesh & Antigravity Media Bridge: gives Claude Code image & MP4 video generation via Antigravity, plus bidirectional calls with Codex.",
+  "author": {
+    "name": "Arthur Wang",
+    "url": "https://github.com/jaylooloomi"
+  },
+  "homepage": "https://github.com/jaylooloomi/agent-bridge",
+  "repository": "https://github.com/jaylooloomi/agent-bridge",
+  "license": "MIT",
+  "keywords": ["agent-bridge", "antigravity", "image-generation", "video-generation", "a2a", "mcp"],
+  "skills": "./skills/"
+}

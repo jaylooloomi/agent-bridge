@@ -32,11 +32,56 @@
 
 ## Install
 
-One command wires **Codex**, **Claude Code**, and **Antigravity** into the same Local Agent Mesh.
+Pick your preferred way—either **paste one sentence to your agent**, install as a **Marketplace Plugin / Skill**, or run a **one-line script**.
 
-**Requires:** Python 3.11+ · git · Any combination of **Antigravity (`agy`)**, **OpenAI Codex CLI**, and **Claude Code CLI**
+**Requires:** Python 3.11+ · git · Any combination of **Claude Code**, **OpenAI Codex CLI**, and **Google Antigravity (`agy`)**
 
-### 1. Clone and install
+### Option A: Zero-effort — Just tell your agent to install it (Recommended)
+
+Copy and paste this single line into **Claude Code**, **Codex**, or **Antigravity**:
+
+```text
+Please install https://github.com/jaylooloomi/agent-bridge for me: clone it to ~/.agent-bridge, create a .venv, pip install -e ., and run agent-bridge-install so all my agents are connected.
+```
+
+Your agent will clone the repo, build the virtual environment, and automatically register the `agent-bridge` MCP server across **Claude Code** (`~/.claude.json`), **Codex** (`~/.codex/config.toml`), and **Antigravity** (`~/.gemini/config/mcp_config.json`).
+
+### Option B: Plugin Marketplace + Skill (`i-want-to-sleep` style)
+
+`agent-bridge` ships with full **Claude Code Plugin** (`.claude-plugin/`), **Codex Plugin** (`.codex-plugin/`), and **Antigravity Plugin/Skill** (`plugins/agent-bridge/skills/agent-bridge/SKILL.md`) manifests:
+
+#### Claude Code
+**Copy this and paste it into Claude Code:**
+```text
+1. claude plugin marketplace add jaylooloomi/agent-bridge
+2. claude plugin install agent-bridge@jaylooloomi --scope user
+3. Run the bootstrap in the agent-bridge skill (`agent-bridge-install`) to wire up the MCP server
+4. Report done
+```
+
+#### OpenAI Codex
+**Copy this and paste it into Codex:**
+```text
+1. codex plugin marketplace add jaylooloomi/agent-bridge
+2. codex plugin add agent-bridge@jaylooloomi
+3. Run the bootstrap in the agent-bridge skill (`agent-bridge-install`) to wire up the MCP server
+4. Report done
+```
+
+### Option C: One-line terminal install (Do it yourself)
+
+**Windows (PowerShell):**
+```powershell
+irm https://raw.githubusercontent.com/jaylooloomi/agent-bridge/main/install.ps1 | iex
+```
+
+**macOS / Linux / WSL / Git Bash:**
+```bash
+curl -fsSL https://raw.githubusercontent.com/jaylooloomi/agent-bridge/main/install.sh | bash
+```
+
+<details>
+<summary><b>Manual step-by-step git clone install</b></summary>
 
 ```powershell
 git clone https://github.com/jaylooloomi/agent-bridge.git
@@ -44,22 +89,13 @@ cd agent-bridge
 python -m venv .venv
 .\.venv\Scripts\activate
 pip install -e ".[dev]"
-```
-
-### 2. Register the unified MCP server across all 3 agents
-
-```powershell
 agent-bridge-install
 ```
+</details>
 
-This single command automatically configures:
-- **Antigravity** (`~/.gemini/config/mcp_config.json`)
-- **OpenAI Codex** (`~/.codex/config.toml`)
-- **Claude Code** (`~/.claude.json`)
+### Start using it (Zero manual daemon maintenance)
 
-### 3. Start using it (Zero manual daemon maintenance)
-
-You **do not** even have to start the daemon manually before opening Codex or Claude:
+Once installed, **start a new session** in Claude Code, Codex, or Antigravity so the newly registered MCP server loads.
 - Whenever any agent invokes an `agent-bridge` MCP tool (`discover_agents`, `generate_image`, `generate_video`, `call_agent`), the MCP adapter checks `http://127.0.0.1:8765/health`.
 - If the daemon is asleep, `agent-bridge-mcp` **auto-spawns it in the background** as a detached daemon process.
 
@@ -216,6 +252,9 @@ Instead of copy-pasting prompts between three different terminal windows, `agent
 | `src/agent_bridge/workers/codex_worker.py` | Codex worker: headless `codex exec` adapter |
 | `src/agent_bridge/workers/claude_worker.py` | Claude worker: headless `claude -p` adapter |
 | `docs/architecture.md` | Full architecture specification and JSON protocol reference |
+| `plugins/agent-bridge/skills/agent-bridge/SKILL.md` | Agent Skill instructing Claude, Codex, and Antigravity on media generation & auto-install |
+| `.claude-plugin/marketplace.json`, `.agents/plugins/marketplace.json` | Claude Code & Codex plugin marketplace manifests |
+| `install.ps1`, `install.sh` | One-line cross-platform installers |
 | `tests/test_agent_bridge.py` | Unit and live end-to-end test suite |
 
 ## FAQ

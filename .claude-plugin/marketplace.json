@@ -1,0 +1,24 @@
+{
+  "name": "jaylooloomi",
+  "description": "Agent Bridge: Bidirectional A2A Mesh & Antigravity Media Engine for Claude Code, Codex, and Antigravity.",
+  "owner": {
+    "name": "Arthur Wang"
+  },
+  "plugins": [
+    {
+      "name": "agent-bridge",
+      "source": "./plugins/agent-bridge",
+      "description": "Connects Claude Code, Codex, and Antigravity over a local A2A mesh. Gives Claude image & MP4 video generation via Antigravity and enables cross-agent calls.",
+      "version": "0.1.0",
+      "category": "productivity",
+      "keywords": [
+        "agent-bridge",
+        "antigravity",
+        "image-generation",
+        "video-generation",
+        "a2a",
+        "mcp"
+      ]
+    }
+  ]
+}

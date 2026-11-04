@@ -32,11 +32,59 @@
 
 ## 安裝
 
-一行指令，同時把 **Codex**、**Claude Code** 與 **Antigravity** 接進同一個本地 Agent 匯流排。
+我們同時把 `agent-bridge` 封裝成了 **MCP 工具 + Plugin Marketplace 外掛 + `SKILL.md` 技能包**。你可以選擇以下任一種最順手的方式安裝：
 
-**需求：** Python 3.11+ · git · 本機已安裝 **Antigravity (`agy`)**、**OpenAI Codex CLI**、**Claude Code CLI**（任選或全裝皆可）
+**需求：** Python 3.11+ · git · 本機已安裝 **Claude Code**、**OpenAI Codex CLI**、**Google Antigravity (`agy`)**（任選或全裝皆可）
 
-### 1. 下載並安裝套件
+### 方式一：最無腦 —— 直接貼網址叫你的 Agent 幫你裝（最推薦 ⭐）
+
+直接複製下面這句話，貼給你的 **Claude Code**、**Codex** 或 **Antigravity**：
+
+```text
+請幫我安裝 https://github.com/jaylooloomi/agent-bridge ：幫我 clone 到 ~/.agent-bridge、建立 .venv 安裝套件，並執行 agent-bridge-install 讓我的所有 Agent 都能互通並呼叫 Antigravity 生圖生影片。
+```
+
+你的 Agent 讀到這個 Repo 後，就會自動幫你完成環境建置，並把 `agent-bridge` 同時註冊進：
+- **Claude Code** (`~/.claude.json`)
+- **OpenAI Codex** (`~/.codex/config.toml`)
+- **Antigravity** (`~/.gemini/config/mcp_config.json`)
+
+### 方式二：透過 Plugin Marketplace 與 Skill 安裝（同 `i-want-to-sleep` 模式）
+
+本專案內建完整的 **Claude Code 外掛清單** (`.claude-plugin/`)、**Codex 外掛清單** (`.codex-plugin/`) 與 **Agent Skill 技能定義** (`plugins/agent-bridge/skills/agent-bridge/SKILL.md`)：
+
+#### Claude Code
+**複製這段，貼給 Claude Code：**
+```text
+1. claude plugin marketplace add jaylooloomi/agent-bridge
+2. claude plugin install agent-bridge@jaylooloomi --scope user
+3. 依照 agent-bridge skill 內的自舉流程執行 agent-bridge-install 掛載 MCP Server
+4. 回報完成
+```
+
+#### OpenAI Codex
+**複製這段，貼給 Codex：**
+```text
+1. codex plugin marketplace add jaylooloomi/agent-bridge
+2. codex plugin add agent-bridge@jaylooloomi
+3. 依照 agent-bridge skill 內的自舉流程執行 agent-bridge-install 掛載 MCP Server
+4. 回報完成
+```
+
+### 方式三：終端機一行指令安裝（不想透過 Agent、自己裝）
+
+**Windows (PowerShell)：**
+```powershell
+irm https://raw.githubusercontent.com/jaylooloomi/agent-bridge/main/install.ps1 | iex
+```
+
+**macOS / Linux / WSL / Git Bash：**
+```bash
+curl -fsSL https://raw.githubusercontent.com/jaylooloomi/agent-bridge/main/install.sh | bash
+```
+
+<details>
+<summary><b>手動逐步 git clone 安裝</b></summary>
 
 ```powershell
 git clone https://github.com/jaylooloomi/agent-bridge.git
@@ -44,24 +92,14 @@ cd agent-bridge
 python -m venv .venv
 .\.venv\Scripts\activate
 pip install -e ".[dev]"
-```
-
-### 2. 一鍵註冊至三大 Agent
-
-```powershell
 agent-bridge-install
 ```
+</details>
 
-執行後會自動將 `agent-bridge` MCP 寫入三個工具的設定檔：
-- **Antigravity** (`~/.gemini/config/mcp_config.json`)
-- **OpenAI Codex** (`~/.codex/config.toml`)
-- **Claude Code** (`~/.claude.json`)
+### 開始使用（具備自癒式自動啟動）
 
-### 3. 直接開始使用（具備自癒式自動啟動）
-
-你**不需要**每次開機都手動去開背景伺服器：
-- 當你在 Codex 或 Claude 呼叫任何 `agent-bridge` 工具時，MCP Client 會先檢查 `http://127.0.0.1:8765/health`。
-- 如果常駐 Daemon 還沒跑起來，`agent-bridge-mcp` 會**自動在背景以獨立程序 (`DETACHED_PROCESS`) 喚醒 Daemon**。
+安裝完成後，**重新開啟一個新的對話 Session**（讓剛寫入的 MCP 設定生效），就可以直接使用！
+- 你**不需要**每次開機都手動去開背景伺服器：當你在 Claude 或 Codex 呼叫任何 `agent-bridge` 工具時，若常駐 Daemon (`127.0.0.1:8765`) 還沒跑起來，`agent-bridge-mcp` 會**自動在背景以獨立程序 (`DETACHED_PROCESS`) 喚醒 Daemon**。
 
 <details>
 <summary><b>想要手動啟動 Daemon 或用瀏覽器監控任務佇列？</b></summary>
@@ -216,6 +254,9 @@ Claude Code 寫程式與規劃架構極強，但它本身**完全無法產生圖
 | `src/agent_bridge/workers/codex_worker.py` | Codex 執行器：封裝 `codex exec` 無頭執行模式 |
 | `src/agent_bridge/workers/claude_worker.py` | Claude 執行器：封裝 `claude -p` 無頭推理模式 |
 | `docs/architecture.md` | 系統架構設計圖與通訊協定規格書 |
+| `plugins/agent-bridge/skills/agent-bridge/SKILL.md` | 專屬 Skill 技能說明書（引導 Agent 自動安裝與調用多媒體工具） |
+| `.claude-plugin/marketplace.json`、`.agents/plugins/marketplace.json` | Claude Code 與 Codex 的 Plugin Marketplace 清單 |
+| `install.ps1`、`install.sh` | Windows / macOS / Linux 一行安裝腳本 |
 | `tests/test_agent_bridge.py` | 單元測試與真實 Antigravity 端對端整合測試 |
 
 ## 常見問題
