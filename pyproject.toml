@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agent-bridge"
+version = "0.1.0"
+description = "Local Agent Mesh Daemon & Unified MCP Hub for bidirectional A2A communication between Codex, Claude, and Antigravity."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.110.0",
+    "uvicorn>=0.29.0",
+    "httpx>=0.27.0",
+    "mcp>=1.0.0",
+    "pydantic>=2.7.0",
+    "pillow>=10.0.0",
+    "imageio>=2.34.0",
+    "imageio-ffmpeg>=0.5.0",
+    "numpy>=1.26.0",
+    "google-antigravity>=0.1.20",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+]
+
+[project.scripts]
+agent-bridge-daemon = "agent_bridge.daemon:main"
+agent-bridge-mcp = "agent_bridge.mcp_server:main"
+agent-bridge-install = "agent_bridge.installer:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
