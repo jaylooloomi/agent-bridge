@@ -1,51 +1,234 @@
-# Agent Bridge (`agent-bridge`)
+<h1 align="center">agent-bridge 🌉</h1>
 
-**Local Agent Mesh Daemon & Unified MCP Hub** — 讓 **Codex**、**Claude** 與 **Antigravity (AGY)** 透過單一工具互相發現、雙向調用，並讓 Codex 與 Claude 能直接呼叫 Antigravity 產生高畫質圖片（`.jpg`/`.png`）與動態短片（`.mp4`）。
+<p align="center">
+  <b>Your coding agents are blind to media. Not anymore.</b><br>
+  Install once. Let <code>Codex</code>, <code>Claude Code</code>, and <code>Antigravity</code> discover each other, generate images &amp; videos, and trade tasks over a local mesh.
+</p>
 
----
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="license MIT"></a>
+  <img src="https://img.shields.io/badge/version-0.1.0-informational" alt="version 0.1.0">
+  <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey" alt="platform Windows | macOS | Linux">
+  <img src="https://img.shields.io/badge/Python-3.11%2B-3776AB" alt="Python 3.11+">
+  <img src="https://img.shields.io/badge/Claude%20Code-MCP-D97757" alt="Claude Code MCP">
+  <img src="https://img.shields.io/badge/Codex-MCP-black" alt="Codex MCP">
+  <img src="https://img.shields.io/badge/Antigravity-Native%20%2B%20SDK-4285F4" alt="Antigravity Native + SDK">
+  <a href="tests"><img src="https://img.shields.io/badge/tests-4%20passing-brightgreen" alt="tests 4 passing"></a>
+  <a href="README.zh-TW.md"><img src="https://img.shields.io/badge/lang-繁體中文-green" alt="繁體中文"></a>
+</p>
 
-## ✨ 核心特色（方案三：常駐守護進程 + A2A 即時通訊匯流排）
+<p align="center"><img src="docs/hero-en.png" alt="Before: Claude and Codex stuck at text-only terminals unable to generate images or videos. With agent-bridge: A glowing local mesh bridge (:8765) connects Claude, Codex, and Antigravity — beaming AI images and MP4 videos straight into your project folder." width="900"></p>
 
-1. **一鍵安裝，三方互連**：
-   執行 `agent-bridge-install`，自動將 `agent-bridge-mcp` 掛載至：
-   - **Codex** (`~/.codex/config.toml`)
-   - **Claude Code** (`~/.claude.json`)
-   - **Antigravity** (`~/.gemini/config/mcp_config.json`)
-2. **免額外 API Key 的 Antigravity 原生多媒體橋接**：
-   - 優先串接本機已登入的 Antigravity Daemon (`~/.gemini/antigravity/bin/agentapi.bat`) 喚起內建 `image-generator` 產生 AI 圖片，並結合 FFmpeg (`libx264`) 進行平滑運鏡與關鍵影格合成產出 720p `.mp4` 短片。
-   - 同時支援 `google-antigravity` Python SDK 與本地離線引擎備援，確保 100% 穩定交付檔案路徑。
-3. **自癒式背景常駐 Daemon (Auto-Spawn)**：
-   - 當任一 Agent 呼叫 MCP 工具時，若本地 `Agent Mesh Daemon` (`127.0.0.1:8765`) 尚未啟動，`agent-bridge-mcp` 會自動在背景拉起常駐服務。
-4. **防死循環防火牆 (Hop Firewall)**：
-   - 內建 `hop_count`、`max_hops`（預設最多 3 跳）與 `call_chain` 追蹤，防止 Agent A ⇄ B 產生無限遞迴調用。
+## Use cases
 
----
+| Situation | What you say in Codex / Claude / Antigravity | Why it fits |
+|---|---|---|
+| 🎨 **Landing page needs real hero art & icons** | `"Generate a cyberpunk space cat hero banner and put it in public/hero.jpg"` | Codex & Claude write great HTML/CSS, but otherwise leave broken `placeholder.png` links. Now they call `generate_image` via Antigravity and wire the real file in |
+| 🎬 **Product demo or game background needs an `.mp4` loop** | `"Generate a 5-second neon nebula background video in outputs/"` | Calls `generate_video` ➔ Antigravity renders a high-res keyframe + synthesizes a smooth 720p `libx264` MP4 motion clip |
+| 🔍 **Dynamic capability discovery** | `"Check which agent in the mesh can generate videos or run code reviews"` | Calls `discover_agents` against the live Registry (`127.0.0.1:8765/agents`) |
+| 🧠 **Second-opinion architecture review** | *(Inside Antigravity or Codex)* `"Ask Claude to review the security of src/daemon.py"` | Routes a `code_review` task to headless `claude -p` and returns the critique |
+| ⚡ **Sandboxed test & algorithm sprint** | *(Inside Claude or Antigravity)* `"Ask Codex to write unit tests for protocol.py"` | Routes a `code_execution` task to headless `codex exec` and returns the result |
+| 🛡️ **Multi-agent collaboration without infinite loops** | Any chained A2A call (`A ➔ B ➔ C`) | Built-in **Hop Firewall** tracks `hop_count` and `call_chain`, rejecting anything past `max_hops = 3` |
 
-## 🚀 快速開始
+## Install
 
-### 1. 安裝套件與環境
+One command wires **Codex**, **Claude Code**, and **Antigravity** into the same Local Agent Mesh.
+
+**Requires:** Python 3.11+ · git · Any combination of **Antigravity (`agy`)**, **OpenAI Codex CLI**, and **Claude Code CLI**
+
+### 1. Clone and install
 
 ```powershell
+git clone https://github.com/jaylooloomi/agent-bridge.git
+cd agent-bridge
 python -m venv .venv
 .\.venv\Scripts\activate
 pip install -e ".[dev]"
 ```
 
-### 2. 一鍵註冊至 Codex、Claude 與 Antigravity
+### 2. Register the unified MCP server across all 3 agents
 
 ```powershell
-.\.venv\Scripts\agent-bridge-install.exe
+agent-bridge-install
 ```
 
-### 3. 在 Codex 或 Claude 中使用
+This single command automatically configures:
+- **Antigravity** (`~/.gemini/config/mcp_config.json`)
+- **OpenAI Codex** (`~/.codex/config.toml`)
+- **Claude Code** (`~/.claude.json`)
 
-你可以直接在 **Codex** 或 **Claude** 對話中輸入：
-- *「請透過 agent-bridge 幫我呼叫 Antigravity 產生一張賽博龐克太空貓的圖片，存在 `d:/git/agent-bridge/outputs`」*
-- *「請呼叫 `generate_video` 產生一段 5 秒的太空貓飛行短片 (.mp4)」*
-- *「查詢目前有哪些註冊的 Agent 支援 `image_generation` 或 `code_review`」*
+### 3. Start using it (Zero manual daemon maintenance)
 
----
+You **do not** even have to start the daemon manually before opening Codex or Claude:
+- Whenever any agent invokes an `agent-bridge` MCP tool (`discover_agents`, `generate_image`, `generate_video`, `call_agent`), the MCP adapter checks `http://127.0.0.1:8765/health`.
+- If the daemon is asleep, `agent-bridge-mcp` **auto-spawns it in the background** as a detached daemon process.
 
-## 🛠️ 架構與通訊協定文件
+<details>
+<summary><b>Want to run or inspect the Daemon manually in a terminal or browser?</b></summary>
 
-詳細的系統架構圖、JSON Schema 與 MCP 工具列表請參閱 [docs/architecture.md](docs/architecture.md)。
+```powershell
+# Launch the FastAPI mesh daemon explicitly on port 8765
+agent-bridge-daemon --host 127.0.0.1 --port 8765
+```
+
+Once running, open your browser to inspect the live mesh:
+- **Live Registered Agents**: `http://127.0.0.1:8765/agents`
+- **Live Task Queue & History**: `http://127.0.0.1:8765/tasks`
+- **Interactive Swagger UI**: `http://127.0.0.1:8765/docs`
+</details>
+
+<details>
+<summary><b>Zero extra API keys required (Credential Reuse)</b></summary>
+
+| Worker | Primary Execution Channel (Zero API Key) | Optional SDK / API Fallback |
+|---|---|---|
+| **Antigravity (`antigravity`)** | Reuses your logged-in Antigravity IDE/CLI daemon via `~/.gemini/antigravity/bin/agentapi.bat` to invoke the built-in `image-generator` subagent | `google-antigravity` Python SDK / `GEMINI_API_KEY` + procedural offline fallback |
+| **Codex (`codex`)** | Reuses your logged-in OpenAI Codex subscription via `codex exec` | `CODEX_CLI_PATH` override |
+| **Claude (`claude`)** | Reuses your logged-in Claude Code subscription via `claude -p` | `CLAUDE_CLI_PATH` override |
+</details>
+
+## Usage
+
+Once `agent-bridge-install` has run, open **Codex**, **Claude Code**, or **Antigravity** and speak naturally:
+
+```text
+# In Codex or Claude Code — Generate an Image via Antigravity
+"Use agent-bridge to generate a minimalist pixel-art icon of a blue robot cat and save it to ./outputs"
+
+# In Codex or Claude Code — Generate an MP4 Video via Antigravity
+"Use agent-bridge generate_video to create a 5-second 16:9 video of a cyberpunk space cat flying past Saturn rings"
+
+# Discover Mesh Capabilities
+"Call discover_agents to see which agents are online and support video_generation"
+
+# Bidirectional A2A Call (e.g. Codex -> Claude, or Antigravity -> Codex)
+"Use call_agent to ask claude to review docs/architecture.md for edge cases"
+```
+
+### Inside the Mesh Control Room
+
+<p align="center"><img src="docs/mesh-workflow.png" alt="The Agent Mesh Control Room: Claude (Architect), Codex (Speedy Coder), and Antigravity (Creative Director) collaborating around the Local Agent Mesh Daemon (:8765) protected by the Hop Firewall <= 3." width="900"></p>
+
+Every task routed through `http://127.0.0.1:8765/tasks` returns a standardized **A2A Task Envelope**:
+
+```json
+{
+  "task_id": "task_5eca91b173",
+  "status": "completed",
+  "caller_agent": "codex",
+  "target_agent": "antigravity",
+  "task_type": "video_generation",
+  "hop_count": 1,
+  "call_chain": ["codex", "antigravity"],
+  "result": {
+    "summary": "Video (5.0s MP4) and keyframe image generated by Antigravity",
+    "artifacts": [
+      {
+        "type": "video",
+        "path": "D:/git/agent-bridge/outputs/codex_demo_1793779064.mp4",
+        "mime_type": "video/mp4"
+      },
+      {
+        "type": "image",
+        "path": "D:/git/agent-bridge/outputs/codex_demo_keyframe_1793779064.jpg",
+        "mime_type": "image/jpeg"
+      }
+    ]
+  }
+}
+```
+
+## Field-tested
+
+Real end-to-end runs on Windows 11 with **Codex CLI `0.141.0`**, **Claude Code `2.1.174`**, and **Antigravity `2.29.0`**.
+
+| Scenario | Route | Output Artifact | Latency / Status |
+|---|---|---|---|
+| 🖼️ **AI Keyframe & Icon Generation** | `codex` ➔ `antigravity` (`agentapi.bat`) | `1024×1024` JPEG (`1.03 MB`) | ~18–25 s ✅ |
+| 🎬 **720p MP4 Video Synthesis** | `codex` ➔ `antigravity` (`image-generator` + `libx264`) | `1280×720` 24fps 5s MP4 (`6.96 MB`) | ~31 s ✅ |
+| 🛡️ **Cyclic Call-Chain Firewall** | `codex` ➔ `claude` ➔ `antigravity` (`hop_count=3`) | Deterministic HTTP 400 block | < 2 ms ✅ |
+| 🧪 **Automated Pytest Suite** | Registry + Firewall + Procedural + Live E2E | `4 passed` | 39.98 s ✅ |
+
+### Real Sample Generated via `Codex ➔ Antigravity`
+
+<p align="center"><img src="docs/demo-keyframe.jpg" alt="Real AI keyframe generated when Codex called Antigravity via agent-bridge: Cyberpunk space cat piloting a glowing neon starfighter across Saturn rings." width="760"><br><sub>▲ Actual <code>1.03 MB</code> keyframe image generated by <code>codex ➔ agent-bridge ➔ antigravity</code> during E2E verification</sub></p>
+
+## Why
+
+Claude Code and OpenAI Codex are phenomenal software engineers, but the moment your frontend, game, or slide deck needs an illustration, icon, or short background video, they hit a wall. Meanwhile, Google Antigravity has native multimedia generation (`image-generator`, Imagen, Veo), and each agent has distinct strengths in reasoning, sandboxing, and context window size.
+
+Instead of copy-pasting prompts between three different terminal windows, `agent-bridge` connects them at the protocol layer: **one thin MCP plugin, one local daemon, bidirectional A2A calls.**
+
+## How it works
+
+```
+[ Codex ]                 [ Claude Code ]               [ Antigravity ]
+    │                            │                             │
+    └──────────────────────┐     │     ┌───────────────────────┘
+                           ▼     ▼     ▼
+             (Thin MCP Adapter: agent-bridge-mcp)
+               Auto-spawns Daemon if not running
+                                 │
+                                 ▼
+     =============================================================
+      Local Agent Mesh Daemon (FastAPI @ http://127.0.0.1:8765)
+      Step 1  Capability Registry : match task to online worker
+      Step 2  Hop Firewall        : verify hop_count < max_hops (3)
+      Step 3  Async Task Queue    : track task_id, prevent MCP timeout
+     =============================================================
+             │                   │                     │
+             ▼                   ▼                     ▼
+    [Antigravity Worker]   [Codex Worker]       [Claude Worker]
+    - Native agentapi.bat  - codex exec         - claude -p
+    - google-antigravity   - Sandboxed CLI      - Headless review
+    - FFmpeg MP4 Engine
+```
+
+## MCP Tools Exposed
+
+| Tool | Parameters | What it does |
+|---|---|---|
+| `discover_agents` | `capability` *(optional)* | Lists all registered agents (`antigravity`, `codex`, `claude`), their online status, and supported capabilities |
+| `generate_image` | `prompt`, `output_dir`, `filename_prefix`, `aspect_ratio` | Delegates directly to Antigravity to generate an image and copies it into `output_dir` |
+| `generate_video` | `prompt`, `output_dir`, `filename_prefix`, `duration_sec`, `aspect_ratio`, `async_mode` | Delegates to Antigravity to generate an AI keyframe and encode a smooth 720p `.mp4` animation |
+| `call_agent` | `target_agent`, `prompt`, `task_type`, `workspace`, `hop_count`, `async_mode` | Universal bidirectional A2A call to `antigravity`, `codex`, or `claude` |
+| `get_task_result` | `task_id`, `wait`, `timeout_sec` | Polls or awaits an asynchronous task (`async_mode=True`) until completion |
+
+## Compatibility
+
+| Agent / Harness | As Caller (MCP Client) | As Worker (Called by others) | Status |
+|---|---|---|---|
+| **Google Antigravity (IDE & CLI)** | ✅ `~/.gemini/config/mcp_config.json` | ✅ Native `agentapi.bat` + `google-antigravity` SDK | ✅ Full support |
+| **OpenAI Codex CLI (`≥ 0.122`)** | ✅ `~/.codex/config.toml` | ✅ Headless `codex exec` | ✅ Full support |
+| **Anthropic Claude Code (`≥ 2.1`)** | ✅ `~/.claude.json` | ✅ Headless `claude -p` | ✅ Full support |
+| **Cursor / Windsurf / Custom Agents** | ✅ Standard MCP stdio config | ✅ Extensible via `POST /agents/register` | ✅ Compatible |
+
+## What's in the box
+
+| Path | Role |
+|---|---|
+| `src/agent_bridge/protocol.py` | Pydantic schemas for `AgentTaskRequest`, `AgentTaskResponse`, `ArtifactItem`, and `AgentDescriptor` |
+| `src/agent_bridge/registry.py` | Live capability registry and binary auto-discovery (`agentapi.bat`, `codex`, `claude`) |
+| `src/agent_bridge/daemon.py` | FastAPI Local Agent Mesh Daemon (`127.0.0.1:8765`), Hop Firewall, and Async Task Queue |
+| `src/agent_bridge/mcp_server.py` | Unified MCP Server (`agent-bridge-mcp`) with detached daemon auto-spawner |
+| `src/agent_bridge/installer.py` | One-click installer (`agent-bridge-install`) for Codex, Claude, and Antigravity configs |
+| `src/agent_bridge/workers/antigravity_worker.py` | Antigravity worker: native `agentapi.bat` bridge, SDK integration, procedural fallback, and MP4 encoder |
+| `src/agent_bridge/workers/codex_worker.py` | Codex worker: headless `codex exec` adapter |
+| `src/agent_bridge/workers/claude_worker.py` | Claude worker: headless `claude -p` adapter |
+| `docs/architecture.md` | Full architecture specification and JSON protocol reference |
+| `tests/test_agent_bridge.py` | Unit and live end-to-end test suite |
+
+## FAQ
+
+**Do I need to buy separate Gemini, OpenAI, and Anthropic API keys?**
+No. By default, `agent-bridge` invokes your locally authenticated `agentapi.bat` (Antigravity), `codex exec`, and `claude -p` CLIs—reusing the subscriptions you already have logged in on your machine.
+
+**What happens if a video takes 45 seconds to render? Will MCP time out?**
+No. The Daemon runs tasks in an asynchronous `TaskQueue` (`src/agent_bridge/daemon.py`). You can either await completion with a generous 180s timeout or pass `async_mode=True` to get an immediate `task_id` and poll via `get_task_result(task_id)`.
+
+**What if Agent A calls Agent B, and Agent B calls Agent A back?**
+Every request carries `hop_count` and `call_chain`. The Daemon's Hop Firewall increments `hop_count` on each hop and immediately rejects any request where `hop_count >= max_hops` (default `3`).
+
+## License
+
+[MIT](LICENSE) © 2026 Arthur Wang (jaylooloomi). Free to use, modify, and redistribute.
