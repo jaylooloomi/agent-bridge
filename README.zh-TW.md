@@ -1,8 +1,8 @@
 <h1 align="center">agent-bridge 🌉</h1>
 
 <p align="center">
-  <b>讓你的 AI 寫程式助手不再是「多媒體盲人」。</b><br>
-  安裝一次，讓 <code>Codex</code>、<code>Claude Code</code> 與 <code>Antigravity</code> 透過本地匯流排互相發現、直接生圖生影片、雙向協同幹活。
+  <b>解決 Claude 無法生圖生影片的痛點，打破三大 Agent 孤島。</b><br>
+  安裝一次，讓 <code>Claude Code</code>、<code>Codex</code> 與 <code>Antigravity</code> 透過本地匯流排互相發現、直接呼叫生圖生影片、雙向協同幹活。
 </p>
 
 <p align="center">
@@ -17,14 +17,14 @@
   <a href="README.md"><img src="https://img.shields.io/badge/lang-English-green" alt="English"></a>
 </p>
 
-<p align="center"><img src="docs/hero-zh.png" alt="左：安裝前，Claude 與 Codex 只能輸出純文字，螢幕顯示「純文字模式 — 無法產生圖片與影片」。右：裝上 agent-bridge 後，透過 :8765 本地匯流排連接 Antigravity，直接把高畫質圖片與 MP4 影片送進專案資料夾，雙雙顯示「任務完成」。" width="900"></p>
+<p align="center"><img src="docs/hero-zh.png" alt="左：安裝前，Claude 只能輸出純文字，螢幕顯示「Claude：純文字 — 無法產生圖片與影片」，且各個 Agent 彼此隔離。右：裝上 agent-bridge 後，透過 :8765 本地匯流排連接 Antigravity 與 Codex，直接把高畫質圖片與 MP4 影片送進專案資料夾，顯示「任務完成」。" width="900"></p>
 
 ## 使用情境
 
-| 情境 | 在 Codex / Claude / Antigravity 怎麼說 | 為什麼適合 |
+| 情境 | 在 Claude / Codex / Antigravity 怎麼說 | 為什麼適合 |
 |---|---|---|
-| 🎨 **做網頁、做遊戲缺主視覺圖與 Icon** | `「幫我用 agent-bridge 畫一張賽博龐克太空貓主視覺，存到 public/hero.jpg」` | Claude 與 Codex 很會寫前端，但以前只能塞假圖連結；現在直接呼叫 Antigravity 產出真圖並自動寫入程式碼 |
-| 🎬 **Landing Page 或簡報需要動態短片 (`.mp4`)** | `「呼叫 generate_video 幫我產生一段 5 秒的太空貓飛行背景影片」` | 自動喚起 Antigravity 產生高畫質關鍵影格，並透過 `libx264` 合成平滑運鏡的 720p `.mp4` 影片 |
+| 🎨 **Claude 寫網頁/遊戲缺主視覺圖與 Icon** | `「幫我用 agent-bridge 畫一張賽博龐克太空貓主視覺，存到 public/hero.jpg」` | Claude 很會寫前端架構，但本身完全無法生圖生影片（以前只能塞假圖連結）；現在直接呼叫 Antigravity 產出真圖並自動寫入程式碼 |
+| 🎬 **Claude 或 Codex 需要動態短片 (`.mp4`)** | `「呼叫 generate_video 幫我產生一段 5 秒的太空貓飛行背景影片」` | 自動喚起 Antigravity 產生高畫質關鍵影格，並透過 `libx264` 合成平滑運鏡的 720p `.mp4` 影片 |
 | 🔍 **動態查詢誰有什麼能力** | `「查詢目前在線有哪些 Agent 支援 video_generation 或 code_review」` | 呼叫 `discover_agents` 即時查詢常駐註冊表 (`127.0.0.1:8765/agents`) |
 | 🧠 **跨 Agent 架構審查 (Second Opinion)** | *(在 Antigravity 或 Codex 內)* `「請呼叫 Claude 幫我審查 src/daemon.py 的安全性」` | 透過無頭模式 `claude -p` 調度 Claude 進行深度 Code Review 並回傳結果 |
 | ⚡ **沙盒測試與演算法衝刺** | *(在 Claude 或 Antigravity 內)* `「請呼叫 Codex 幫 protocol.py 補齊測試」` | 透過無頭模式 `codex exec` 調度 Codex 快速實作並回傳輸出 |
@@ -155,9 +155,9 @@ agent-bridge-daemon --host 127.0.0.1 --port 8765
 
 ## 為什麼做這個
 
-Claude Code 和 OpenAI Codex 寫程式極強，但只要你的網頁、遊戲或簡報需要一張插圖、Icon 或一段 5 秒的背景動態影片，它們就只能兩手一攤給你一個 `placeholder.png`；與此同時，Google Antigravity 內建了強大的多媒體生成工具（`image-generator`、Imagen、Veo），而且三大工具各自在架構推理、沙盒執行與超大上下文各有專精。
+Claude Code 寫程式與規劃架構極強，但它本身**完全無法產生圖片與影片**——只要你的網頁、遊戲或簡報需要一張插圖、Icon 或一段 5 秒的背景動態影片，Claude 就只能兩手一攤給你一個 `placeholder.png`；與此同時，雖然 Codex 能生圖、Google Antigravity 更有強大的多媒體生成引擎（`image-generator`、Imagen、Veo），但三大工具彼此是隔絕的孤島，無法互相調用。
 
-與其在三個視窗之間手動複製貼上，不如裝一個 `agent-bridge`：**一個薄層 MCP 外掛 ＋ 一個本地常駐 Daemon，讓三大 Agent 直接在協定層雙向對話。**
+與其在三個視窗之間手動複製貼上，不如裝一個 `agent-bridge`：**一個薄層 MCP 外掛 ＋ 一個本地常駐 Daemon，讓三大 Agent 直接在協定層雙向對話、能力互補。**
 
 ## 運作方式
 

@@ -1,8 +1,8 @@
 <h1 align="center">agent-bridge 🌉</h1>
 
 <p align="center">
-  <b>Your coding agents are blind to media. Not anymore.</b><br>
-  Install once. Let <code>Codex</code>, <code>Claude Code</code>, and <code>Antigravity</code> discover each other, generate images &amp; videos, and trade tasks over a local mesh.
+  <b>Claude is blind to media, and your agents live in silos. Not anymore.</b><br>
+  Install once. Let <code>Claude Code</code>, <code>Codex</code>, and <code>Antigravity</code> discover each other, generate images &amp; videos, and trade tasks over a local mesh.
 </p>
 
 <p align="center">
@@ -17,14 +17,14 @@
   <a href="README.zh-TW.md"><img src="https://img.shields.io/badge/lang-繁體中文-green" alt="繁體中文"></a>
 </p>
 
-<p align="center"><img src="docs/hero-en.png" alt="Before: Claude and Codex stuck at text-only terminals unable to generate images or videos. With agent-bridge: A glowing local mesh bridge (:8765) connects Claude, Codex, and Antigravity — beaming AI images and MP4 videos straight into your project folder." width="900"></p>
+<p align="center"><img src="docs/hero-en.png" alt="Before: Claude stuck at a text-only terminal unable to generate images or videos while isolated from other agents. With agent-bridge: A glowing local mesh bridge (:8765) connects Claude, Codex, and Antigravity — beaming AI images and MP4 videos straight into your project folder." width="900"></p>
 
 ## Use cases
 
-| Situation | What you say in Codex / Claude / Antigravity | Why it fits |
+| Situation | What you say in Claude / Codex / Antigravity | Why it fits |
 |---|---|---|
-| 🎨 **Landing page needs real hero art & icons** | `"Generate a cyberpunk space cat hero banner and put it in public/hero.jpg"` | Codex & Claude write great HTML/CSS, but otherwise leave broken `placeholder.png` links. Now they call `generate_image` via Antigravity and wire the real file in |
-| 🎬 **Product demo or game background needs an `.mp4` loop** | `"Generate a 5-second neon nebula background video in outputs/"` | Calls `generate_video` ➔ Antigravity renders a high-res keyframe + synthesizes a smooth 720p `libx264` MP4 motion clip |
+| 🎨 **Claude needs real hero art & icons** | `"Generate a cyberpunk space cat hero banner and put it in public/hero.jpg"` | Claude writes great HTML/CSS, but cannot generate images or videos natively (leaving broken `placeholder.png` links). Now Claude calls `generate_image` via Antigravity and wires the real file in |
+| 🎬 **Claude or Codex needs an `.mp4` video** | `"Generate a 5-second neon nebula background video in outputs/"` | Calls `generate_video` ➔ Antigravity renders a high-res keyframe + synthesizes a smooth 720p `libx264` MP4 motion clip |
 | 🔍 **Dynamic capability discovery** | `"Check which agent in the mesh can generate videos or run code reviews"` | Calls `discover_agents` against the live Registry (`127.0.0.1:8765/agents`) |
 | 🧠 **Second-opinion architecture review** | *(Inside Antigravity or Codex)* `"Ask Claude to review the security of src/daemon.py"` | Routes a `code_review` task to headless `claude -p` and returns the critique |
 | ⚡ **Sandboxed test & algorithm sprint** | *(Inside Claude or Antigravity)* `"Ask Codex to write unit tests for protocol.py"` | Routes a `code_execution` task to headless `codex exec` and returns the result |
@@ -155,7 +155,7 @@ Real end-to-end runs on Windows 11 with **Codex CLI `0.141.0`**, **Claude Code `
 
 ## Why
 
-Claude Code and OpenAI Codex are phenomenal software engineers, but the moment your frontend, game, or slide deck needs an illustration, icon, or short background video, they hit a wall. Meanwhile, Google Antigravity has native multimedia generation (`image-generator`, Imagen, Veo), and each agent has distinct strengths in reasoning, sandboxing, and context window size.
+Claude Code is a phenomenal software architect and coder, but it cannot generate images or videos at all—the moment your frontend, game, or slide deck needs an illustration, icon, or short background video, Claude hits a wall. And while Codex can generate images and Antigravity has native multimedia generation (`image-generator`, Imagen, Veo), all three agents live in isolated silos unable to call each other.
 
 Instead of copy-pasting prompts between three different terminal windows, `agent-bridge` connects them at the protocol layer: **one thin MCP plugin, one local daemon, bidirectional A2A calls.**
 

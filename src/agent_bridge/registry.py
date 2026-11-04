@@ -104,12 +104,13 @@ class AgentRegistry:
                 backend_mode="codex_cli" if codex_bin else "unavailable",
                 capabilities=[
                     TaskType.CODE_EXECUTION.value,
+                    TaskType.IMAGE_GENERATION.value,
                     TaskType.CODE_REVIEW.value,
                     TaskType.GENERAL_CHAT.value,
                 ],
                 description=(
                     "Specializes in rapid algorithm implementation, sandboxed test execution, "
-                    "CLI batch refactoring, and debugging via `codex exec`."
+                    "image generation, CLI batch refactoring, and debugging via `codex exec`."
                 ),
             ),
             AgentDescriptor(
