@@ -17,7 +17,7 @@
   <a href="README.md"><img src="https://img.shields.io/badge/lang-English-green" alt="English"></a>
 </p>
 
-<p align="center"><img src="docs/hero-zh.png" alt="左：安裝前，Claude 只能輸出純文字，螢幕顯示「Claude：純文字 — 無法產生圖片與影片」，且各個 Agent 彼此隔離。右：裝上 agent-bridge 後，透過 :8765 本地匯流排連接 Antigravity 與 Codex，直接把高畫質圖片與 MP4 影片送進專案資料夾，顯示「任務完成」。" width="900"></p>
+<p align="center"><img src="docs/hero-zh.png" alt="左：安裝前，左邊的 Gemini 處於單機孤島無法與 Claude 協作，右邊的 Claude 螢幕顯示「純文字模式 — 無法產生圖片與影片」。右：裝上 agent-bridge 後，透過 :8765 本地匯流排連接 Antigravity，直接把高畫質圖片與 MP4 影片送進專案資料夾，雙雙顯示「任務完成」。" width="900"></p>
 
 ## 使用情境
 
